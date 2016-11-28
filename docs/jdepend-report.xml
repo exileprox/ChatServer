@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<JDepend>
+    <Packages>
+
+        <Package name="g53sqm.chat.server">
+            <Stats>
+                <TotalClasses>4</TotalClasses>
+                <ConcreteClasses>4</ConcreteClasses>
+                <AbstractClasses>0</AbstractClasses>
+                <Ca>0</Ca>
+                <Ce>0</Ce>
+                <A>0</A>
+                <I>0</I>
+                <D>1</D>
+                <V>1</V>
+            </Stats>
+
+            <AbstractClasses>
+            </AbstractClasses>
+
+            <ConcreteClasses>
+                <Class sourceFile="Unknown">
+                    g53sqm.chat.server.Connection
+                </Class>
+                <Class sourceFile="Unknown">
+                    g53sqm.chat.server.Runner
+                </Class>
+                <Class sourceFile="Unknown">
+                    g53sqm.chat.server.Server
+                </Class>
+                <Class sourceFile="Unknown">
+                    g53sqm.chat.server.Server$1
+                </Class>
+            </ConcreteClasses>
+
+            <DependsUpon>
+            </DependsUpon>
+
+            <UsedBy>
+            </UsedBy>
+        </Package>
+    </Packages>
+
+    <Cycles>
+    </Cycles>
+</JDepend>

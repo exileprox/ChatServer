@@ -1,0 +1,121 @@
+<project name="g53sqm-chat-server" basedir="." default="jar" xmlns:sonar="antlib:org.sonar.ant">
+	<property name="main.source.dir"    value="src/main"/>
+	<property name="main.build.dir"     value="bin/main"/>
+    <property name="main.lib.dir"       value="lib/main"/>
+	<property name="test.source.dir"    value="src/test"/>
+	<property name="test.build.dir"     value="bin/test"/>
+    <property name="test.lib.dir"       value="lib/test"/>
+    <property name="build.dir"      	value="bin"/>
+    <property name="jar.dir"        	value="dist"/>
+    <property name="jar.file"       	 value="${jar.dir}/${ant.project.name}.jar"/>
+    <property name="main-class"     	value="g53sqm.chat.server.Runner"/>
+	<!-- Define the SonarQube global properties (the most usual way is to pass these properties via the command line) -->
+	<property name="sonar.host.url" value="http://localhost:9000" />
+	 
+
+	 
+	<!-- Define the SonarQube project properties -->
+	<property name="sonar.projectKey" value="org.codehaus.sonar:example-java-ant" />
+	<property name="sonar.projectName" value="Simple Java Project analyzed with the SonarQube Ant Task" />
+	<property name="sonar.projectVersion" value="1.0" />
+	<property name="sonar.sources" value="src/main" />
+	<property name="sonar.java.binaries" value="bin/main" />
+	
+	<path id="main.libraries.path">    
+        <fileset dir="${main.lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+	
+	<path id="test.libraries.path">    
+        <fileset dir="${test.lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+	
+    <target name="clean" description="delete old files">
+        <delete dir="${build.dir}"/>
+        <delete dir="${jar.dir}"/>
+    </target>
+
+    <target name="compile" description="build class files" depends="clean">
+        <mkdir dir="${main.build.dir}"/>
+        <javac srcdir="${main.source.dir}" destdir="${main.build.dir}" includeantruntime="false">
+            <classpath refid="main.libraries.path"/>
+        </javac>
+    </target>
+	
+	<target name="test-compile" description="build test class files" depends="compile">
+        <mkdir dir="${test.build.dir}"/>
+        <javac srcdir="${test.source.dir}" destdir="${test.build.dir}" includeantruntime="false">
+            <classpath refid="test.libraries.path"/>
+			<classpath location="${main.build.dir}" />
+        </javac>
+    </target>
+	
+	<target name="test" depends="test-compile">
+		<junit printsummary="on" haltonfailure="yes" fork="true">
+			<classpath>
+			  <path refid="test.libraries.path"/>
+			  <pathelement location="${main.build.dir}"/>
+			  <pathelement location="${test.build.dir}"/>
+			</classpath>
+			<formatter type="brief" usefile="false" />
+			<batchtest>
+				<fileset dir="${test.source.dir}" includes="**/*Test.java" />
+			</batchtest>
+		</junit>
+	</target>
+
+
+   <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <mkdir dir="${main.build.dir}/${main.lib.dir}"/>
+        <copy todir="${main.build.dir}/${main.lib.dir}" flatten="true">
+            <path refid="main.libraries.path"/>
+        </copy>
+
+        <manifestclasspath property="manifest.classpath" jarfile="${jar.file}">
+            <classpath refid="main.libraries.path"/>
+        </manifestclasspath>
+
+        <jar destfile="${jar.file}" basedir="${main.build.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+                <attribute name="Class-Path" value="${manifest.classpath}"/>
+            </manifest>
+        </jar>  
+    </target>
+
+    <target name="run" depends="jar">
+        <java jar="${jar.dir}/${ant.project.name}.jar" fork="true"/>
+    </target>
+	
+	<target name="jdepend">
+
+	  <jdepend format="xml" outputfile="docs/jdepend-report.xml">
+		  <exclude name="java.*"/>
+		  <exclude name="javax.*"/>
+		  <classespath>
+			<pathelement location="${main.build.dir}" />
+		  </classespath>
+		  <classpath location="${main.build.dir}" />
+	  </jdepend>
+
+	  <style basedir="docs" destdir="docs"
+			 includes="jdepend-report.xml" 
+			 style="${ant.home}/etc/jdepend.xsl" />
+
+	</target>
+	
+	<target name="sonar">
+		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+			<!-- Update the following line, or put the "sonarqube-ant-task-*.jar" file in your "$HOME/.ant/lib" folder -->
+			<classpath path="path/to/sonar/ant/task/lib/sonarqube-ant-task-*.jar" />
+		</taskdef>
+	 
+		<!-- Execute the SonarQube analysis -->
+		<sonar:sonar />
+	</target>
+
+</project>
